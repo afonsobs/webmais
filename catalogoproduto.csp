@@ -1,0 +1,401 @@
+<csp:class description="página de teste webmais">
+
+<!--  Afonso  --  teste para WebMais -- 28-10-2018  -->
+
+<head>
+<title>Teste produto webmais</title>
+
+<style type="text/css">
+ <!--
+	body { 
+		color: black; background:  #FFFFFF; font-family: Helvetica,Arial; 
+		}
+
+	.center1 {
+		padding: 20px 0;
+		width:70%;
+		border: 1px solid black;
+		}
+	.center2 {
+		padding: 20px 0;
+		width:85%;
+		height:100px;
+		border: 1px solid black;
+		overflow-y: scroll;
+		}
+	.size70{
+		 width: 70%
+		}
+
+	 Titulo01   { 
+		background: #CCCCCC;text-align: center;
+		border-color: white; border-width: 2px; border-style: solid;font-size: 20 
+		}
+ 
+	span { 
+		float: left;
+		width: 140px;
+		
+		font-size: 13px;
+		color:  #545454;
+		
+	}
+	.span2 { 
+		width: 100%;		
+		font-size: 13px;
+		color:  #999999;		
+	}
+ 
+	.Error{ font-style: bold; color: red; }
+
+ 
+ -->
+ </style>
+
+</head>
+
+<body >
+	<div align=center>
+		<Titulo01 >
+			<b>Cadastro de Produto</b>
+		</Titulo01>
+		
+		<p></p>
+		
+		<div id=tela1 class=center1 >
+			<Div id=catalogo align="left">
+			    <span><div align=right>c&oacute;digo do produto :&nbsp; </div></span>
+				<input type=text id=codigoProduto value=''  placeholder=" informe o c&oacute;digo " >
+				<input type=button id=Consulta value='...' onclick='getProduto(codigoProduto.value)'>
+				<br><span ><div align=right> Descri&ccedil;&atilde;o :&nbsp; </div></span>
+				<input type=text id=descricao value=''  placeholder=""  class=size70 >
+				<br>
+				<br><span ><div align=right>Altura :&nbsp; </div></span>
+				<input type=text id=altura value=''  placeholder="" size="10" >
+				<br><span ><div align=right>Largura :&nbsp; </div></span>
+				<input type=text id=largura value=''  placeholder="" size="10" >
+				<br><span ><div align=right>Profundidade :&nbsp; </div></span>
+				<input type=text id=profundidade value=''  placeholder="" size="10" >	
+				<br><br><span >&nbsp;</span>
+				<input type=button id=Gravar value='Gravar'  onclick='saveProduto(codigoProduto.value)'>
+				&nbsp;&nbsp;
+				<input type=button id=limpar value='Limpar' onclick='window.location.reload(false);'>
+		
+			</div>
+		</div>
+		
+		<br>
+		<div id=tela2 class=center1 >
+			<Div id=catalogo2 align="left">
+				<br><span ><div align=right>Coment&aacute;rio :&nbsp; </div></span>
+				<input type=text id=comentario value=''  placeholder="" class=size70 >	
+				<br><br><span >&nbsp;</span>
+				<input type=button id=incluir value='Incluir' onclick="saveIncluir(comentario.value)" >
+				&nbsp;&nbsp;
+				<input type=button id=excluir value='Excluir'>
+			</div>
+			
+			<br><br>
+			<div id=tela3 class=center2 ><span id=allcomente class=span2 align=left ></span>
+			</div>			
+		</div>
+		
+	</div>
+
+
+</body>
+
+<!--    ===============================  Scripts  Cache ====================================     -->
+
+<script language="cache" method="subGetProduto" 
+  arguments="codpro:%String" returntype="%String">
+  	
+  	if (codpro = "" ){ 
+  		s msgerror="Informe um código de produto valido."
+  		&js<alert("Informe um código de produto valido.")> 
+  		quit 0
+  	}
+  	
+    ; simula empresa e parametros fixos para teste
+  	s codempresa=1 
+  	s nscache="SAMPLES"  
+  	
+  	;bloqueia o codigo do prod
+  	&js<document.getElementById('codigoProduto').disabled='disabled'>	
+  	
+  	; produto não cadastado
+
+  	if '$d(^[nscache]wmProduto(codempresa,codpro)) {
+	  	&js<document.getElementById('Gravar').value="Gravar Novo">
+	  	
+	  	quit 1
+	  	
+  	}
+  	
+  	; produto já cadastrado
+
+  	
+	s reg1=^[nscache]wmProduto(codempresa,codpro)
+	s desc=$p(reg1,"^",1)
+	s altu=$p(reg1,"^",2)
+	s larg=$p(reg1,"^",3)
+	s prof=$p(reg1,"^",4)
+	
+	; preenche tela
+		
+	&js<document.getElementById('descricao').value="#(desc)#">
+	&js<document.getElementById('altura').value="#(altu)#">
+	&js<document.getElementById('largura').value="#(larg)#">
+	&js<document.getElementById('profundidade').value="#(prof)#">
+	
+	; muda texto do botão salvar
+	&js<document.getElementById('Gravar').value="Atualizar">
+	
+		s str=""
+	s ch=""
+	for i=1:1  {
+		S ch=$O(^[nscache]wmProduto(codempresa,codpro,ch))
+			I ch="" Q
+			S x=^(ch)
+			S str=str_x_"<br>"
+		}
+		
+		;s str="afonso"
+	 	
+  	&js<document.getElementById('allcomente').innerHTML="#(str)#">
+	
+ quit 2
+</script>
+
+<script language="cache" method="subSaveProduto" 
+  	arguments="codpro1:%String,desc1:%String,altu1:%String,larg1:%String,prof1:%String" 
+  	returntype="%String">
+  	
+
+  	
+  	if (codpro1 = "" ){ 
+  		&js<alert("Informe um código de produto valido.")> 
+  		quit 0
+  	}
+	
+  	if ($length(desc1) = 0 ){ 
+  		&js<alert("Informe a descriçao do produto .")> 
+  		quit -1
+  	}	
+	
+    if (altu1'=""){
+	    if ( altu1'?0.N0.1"."1.N ) {
+		    &js<alert("A sintaxe da altura precisa ser decimal. Ex  125 ou 25.789 ")> 
+  			quit -2
+		    }
+    }
+    
+    if (larg1'=""){
+	    if ( larg1'?0.N0.1"."1.N ) {
+		    &js<alert("A sintaxe da largura precisa ser decimal. Ex  125 ou 25.789 ")> 
+  			quit -3
+		    }
+    }
+    
+       if (prof1'=""){
+	    if ( prof1'?0.N0.1"."1.N ) {
+		    &js<alert("A sintaxe da profundidade precisa ser decimal. Ex  125 ou 25.789 ")> 
+  			quit -4
+		    }
+    }    
+    ; simula empresa e parametros fixos para teste
+  	s codempresa=1 
+  	s nscache="SAMPLES"
+  	
+    s desc1=$tr(desc1,"""","'")
+    s desc1=$tr(desc1,"^"," ")
+  	
+  	S X=$G(^[nscache]wmProduto(codempresa,codpro1))
+  	S $P(X,"^",1)=desc1
+  	S $P(X,"^",2)=altu1
+  	S $P(X,"^",3)=larg1
+  	S $P(X,"^",4)=prof1
+  	s ^[nscache]wmProduto(codempresa,codpro1)=X  
+	
+ quit 2
+</script>
+ <script language="cache" method="subSaveComentario"
+	arguments="codpro2:%String,comente1:%String" 
+	returntype="%String">
+	
+	if (codpro2 = "" ){ 
+		&js<alert("Informe um código de produto valido.")> 
+		quit 0
+	}
+
+	if ($length(comente1) = 0 ){ 
+		&js<alert("Informe o comentário .")> 
+		quit 0
+	}
+	
+  	s codempresa=1 
+  	s nscache="SAMPLES"
+  	if '$d(^[nscache]wmProduto(codempresa,codpro2)){
+	  	&js<alert("Produto ainda não cadastrado .")> 
+		quit 0
+	  	
+  	}
+  	s ch=$o(^[nscache]wmProduto(codempresa,codpro2,""))
+  	if (ch="") { s ch=-1 }
+  	else {  s ch=ch-1 }
+  	
+  	s comente1=$tr(comente1,"""","'")
+  	s comente1=$tr(comente1,"^"," ")
+  	
+  	s ^[nscache]wmProduto(codempresa,codpro2,ch)=comente1  		
+	
+	
+	s str=""
+	s ch=""
+	for i=1:1  {
+		S ch=$O(^[nscache]wmProduto(codempresa,codpro2,ch))
+			I ch="" Q
+			S x=^(ch)
+			S str=str_x_"<br align=left>"
+		}
+		
+		;s str="afonso"
+	 	
+  	&js<document.getElementById('allcomente').innerHTML="#(str)#">
+  	quit 1
+  	
+  	
+ </script>
+<!--    ===============================  Scripts Javasript ====================================     -->
+
+
+<script language=javascript>
+habilita(true)
+
+function habilita(bln){
+	if(bln==true){
+		document.getElementById('Gravar').disabled='disabled'
+		document.getElementById('descricao').disabled='disabled'
+		document.getElementById('altura').disabled='disabled'
+		document.getElementById('largura').disabled='disabled'
+		document.getElementById('profundidade').disabled='disabled'
+		document.getElementById('comentario').disabled='disabled'
+		document.getElementById('incluir').disabled='disabled'
+		
+	}
+	if(bln==false){
+		document.getElementById('Gravar').disabled=''
+		document.getElementById('descricao').disabled=''
+		document.getElementById('altura').disabled=''
+		document.getElementById('largura').disabled=''
+		document.getElementById('profundidade').disabled=''
+		document.getElementById('comentario').disabled=''
+		document.getElementById('incluir').disabled=''
+		
+	}	
+	
+}
+
+function getProduto(codProduto){
+	var straux=codProduto;
+	if(straux.trim()==''){
+		alert('Informe um c\u00f3digo valido');
+		return
+	}
+	
+	//libera digitação do produto
+	habilita(false)	
+	
+	// vou verificar a situação do produto na global		
+	stat=#server(..subGetProduto(straux))#
+	if(stat==0){
+		alert('O servidor retornou erro ao verificar o produto');
+		return
+	}
+	if(stat==1){
+		// produto novo
+		document.getElementById('descricao').focus()
+		return
+	}
+	
+	// produto já cadastrado
+	document.getElementById('comentario').focus()
+			  
+	  
+}
+
+function saveProduto(codProduto){
+	var straux=codProduto;
+	if(straux.trim()==''){
+		alert('Informe um c\u00f3digo valido');
+		return
+	}
+			
+	// vou verificar a situação do produto na global
+	var desc=document.getElementById('descricao').value
+	var altu=document.getElementById('altura').value
+	var larg=document.getElementById('largura').value
+	var prof=document.getElementById('profundidade').value
+
+			
+	stat=#server(..subSaveProduto(straux,desc,altu,larg,prof))#
+	if(stat==0){
+		// erro ao gravar
+		return
+	}
+	
+	if(stat==-1){
+		// erro ao gravar
+		document.getElementById('descricao').focus()
+		return
+	}	
+	if(stat==-2){
+		// erro ao gravar
+		document.getElementById('altura').focus()
+		return
+	}
+	if(stat==-3){
+		// erro ao gravar
+		document.getElementById('largura').focus()
+		return
+	}
+	if(stat==-4){
+		// erro ao gravar
+		document.getElementById('profundidade').focus()
+		return
+	}
+
+
+	// posiciona no comentario
+	document.getElementById('comentario').focus()
+	return
+			  
+	  
+}
+
+function saveIncluir(strComenta){
+	if(strComenta.trim()==''){
+		alert('Informe um comentário valido');
+		return
+	}
+	
+	var straux=document.getElementById('codigoProduto').value
+	stat=#server(..subSaveComentario(straux,strComenta))#
+	if(stat==0){
+		document.getElementById('comentario').focus()
+		return	
+	}
+
+	document.getElementById('comentario').value=""
+	document.getElementById('comentario').focus()	
+	
+	if(confirm("Deseja inserir mais um comentário")==true){
+
+		return			
+		}
+	window.location.reload(false)
+	return	
+	
+}
+</script>
+</html>
