@@ -10,7 +10,9 @@ se o namespace for outro, alterar o fonte , trocando a texto SAMPLES pelo nome d
 o repositório tambem um arquivo com 2 produtos para popular a global ^wmProduto para testes, usando o utilitario ^%GI ou equivalente
 
 arquivos 
-wmProduto.txt   ->   copiar para o namespace cache - não é necessário
+wmProduto.txt   ->   copiar para o namespace cache - opcional.
+
+
 catalogoproduto.csp    ->   página do catalogo de produto web
 
 
